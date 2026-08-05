@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FCG Home Loan Calculator</title>
+</head>
+<body>
+<style>
+  :root{
+    --bg:#F4F6F4; --surface:#FFFFFF; --ink:#1B2420; --muted:#5F6E66; --line:#E1E7E2;
+    --accent:#17614A; --on-accent:#FFFFFF; --accent-soft:#E3EFE9;
+    --gold-bg:#F5EAD1; --gold-ink:#6B4E14;
+    --c-base:#7C5CBF; --c-save:#177B52;
+    --shadow:0 4px 14px rgba(15,30,22,.12);
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0E1411; --surface:#161D18; --ink:#E7EEE8; --muted:#96A59B; --line:#28322B;
+      --accent:#3FA97E; --on-accent:#0B1410; --accent-soft:#1C2C24;
+      --gold-bg:#342B12; --gold-ink:#E3C77D;
+      --c-base:#9878E8; --c-save:#38A878;
+      --shadow:0 4px 14px rgba(0,0,0,.45);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#F4F6F4; --surface:#FFFFFF; --ink:#1B2420; --muted:#5F6E66; --line:#E1E7E2;
+    --accent:#17614A; --on-accent:#FFFFFF; --accent-soft:#E3EFE9;
+    --gold-bg:#F5EAD1; --gold-ink:#6B4E14;
+    --c-base:#7C5CBF; --c-save:#177B52;
+    --shadow:0 4px 14px rgba(15,30,22,.12);
+  }
+  :root[data-theme="dark"]{
+    --bg:#0E1411; --surface:#161D18; --ink:#E7EEE8; --muted:#96A59B; --line:#28322B;
+    --accent:#3FA97E; --on-accent:#0B1410; --accent-soft:#1C2C24;
+    --gold-bg:#342B12; --gold-ink:#E3C77D;
+    --c-base:#9878E8; --c-save:#38A878;
+    --shadow:0 4px 14px rgba(0,0,0,.45);
+  }
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+    font-size:15px; line-height:1.55;
+    -webkit-text-size-adjust:100%;
+  }
+  *{box-sizing:border-box}
+  .wrap{max-width:880px;margin:0 auto;padding:24px 16px 60px}
+
+  /* header */
+  .top{display:flex;align-items:center;gap:14px}
+  .brand{
+    width:46px;height:46px;flex:0 0 auto;border-radius:12px;
+    background:var(--accent);color:var(--on-accent);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:15px;letter-spacing:.02em;
+  }
+  .top h1{margin:0;font-size:22px;font-weight:800;letter-spacing:-.01em;line-height:1.2;text-wrap:balance}
+  .top .sub{margin:3px 0 0;font-size:13px;color:var(--muted)}
+
+  /* cards + inputs */
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-top:14px}
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .grid{display:grid;gap:12px}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  @media (max-width:720px){ .g4,.g3{grid-template-columns:repeat(2,1fr)} }
+  label.f{display:block;font-size:12.5px;font-weight:600;color:var(--muted)}
+  .field{
+    display:flex;align-items:center;gap:6px;margin-top:6px;
+    background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 12px;
+  }
+  .field:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .field input{
+    border:0;background:none;color:var(--ink);
+    font-family:inherit;font-size:16px;font-weight:650;
+    width:100%;min-width:0;padding:0;
+    font-variant-numeric:tabular-nums;
+  }
+  .field input:focus{outline:none}
+  .field span{color:var(--muted);font-size:12.5px;font-weight:600;flex:0 0 auto}
+  .loanline{margin-top:12px;font-size:13.5px;color:var(--muted)}
+  .loanline b{color:var(--ink);font-weight:750;font-variant-numeric:tabular-nums}
+
+  /* tabs */
+  .tabs{display:flex;gap:4px;margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;overflow-x:auto}
+  .tab{
+    flex:1;white-space:nowrap;border:0;background:none;color:var(--muted);
+    font-family:inherit;font-weight:650;font-size:13.5px;
+    padding:9px 12px;border-radius:9px;cursor:pointer;
+    transition:background-color .15s,color .15s;
+  }
+  .tab.on{background:var(--accent);color:var(--on-accent)}
+  .tab:not(.on):hover{color:var(--ink)}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .panel{display:none}
+  .panel.on{display:block}
+
+  /* stat tiles */
+  .tiles{display:grid;gap:12px;grid-template-columns:1.4fr 1fr 1fr;margin-top:14px}
+  @media (max-width:720px){
+    .tiles{grid-template-columns:1fr 1fr}
+    .tile.hero{grid-column:1 / -1}
+  }
+  .tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+  .tile .tl{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+  .tile .tv{margin-top:6px;font-size:30px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.15;overflow-wrap:anywhere}
+  .tile .tv.sm{font-size:20px}
+  .tile .ts{margin-top:4px;font-size:12.5px;color:var(--muted)}
+  .tile.hero .tv{color:var(--accent)}
+  .tile.gold{background:var(--gold-bg);border-color:transparent}
+  .tile.gold .tl{color:var(--gold-ink);opacity:.8}
+  .tile.gold .tv{color:var(--gold-ink)}
+  .tile.gold .ts{color:var(--gold-ink);opacity:.75}
+
+  /* tables */
+  .tablewrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;padding:8px 10px;border-bottom:1px solid var(--line)}
+  th.r{text-align:right}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  td.r{text-align:right;font-variant-numeric:tabular-nums;font-weight:650;white-space:nowrap}
+  tr.total td{border-bottom:0;border-top:2px solid var(--ink);font-weight:800}
+  .hint{display:block;font-size:11.5px;color:var(--muted);font-weight:400;margin-top:2px}
+  .mini{
+    width:96px;border:1px solid var(--line);border-radius:7px;padding:4px 8px;
+    font-family:inherit;font-size:13.5px;font-weight:650;color:var(--ink);
+    background:var(--bg);text-align:right;font-variant-numeric:tabular-nums;
+  }
+  #flexTable{min-width:600px}
+  #insTable{min-width:520px}
+  #insTable td:first-child{white-space:nowrap}
+
+  /* checkboxes, notes */
+  .chk{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;margin:6px 0;cursor:pointer}
+  input[type="checkbox"]{accent-color:var(--accent);width:16px;height:16px;margin:2px 0 0;flex:0 0 auto}
+  .opts{margin-bottom:12px}
+  .note{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .notice{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:13px;background:var(--accent-soft);color:var(--ink)}
+  .notice.warn{background:var(--gold-bg);color:var(--gold-ink)}
+
+  /* upfront cash strip */
+  .cashline{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:12px;margin-top:14px;padding:14px 16px;background:var(--accent-soft);border-radius:10px}
+  @media (max-width:600px){ .cashline{grid-template-columns:1fr} }
+  .cashline .cl{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .cashline .cv{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px}
+  .cashline .big .cv{font-size:24px;color:var(--accent)}
+
+  /* chart */
+  .legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12.5px;color:var(--muted);margin-bottom:6px}
+  .sw{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:-1px}
+  .chartwrap{position:relative}
+  #chart{width:100%;height:auto;display:block;touch-action:pan-y}
+  .grid-ln{stroke:var(--line);stroke-width:1}
+  .ax{fill:var(--muted);font-size:11px}
+  .ln{fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+  .ln.base{stroke:var(--c-base)}
+  .ln.save{stroke:var(--c-save)}
+  .dot.base{fill:var(--c-base);stroke:var(--surface);stroke-width:2}
+  .dot.save{fill:var(--c-save);stroke:var(--surface);stroke-width:2}
+  .xhair{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3}
+  #tip{
+    position:absolute;pointer-events:none;display:none;z-index:5;
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;
+    padding:8px 11px;font-size:12.5px;box-shadow:var(--shadow);min-width:160px;
+  }
+  #tip .tt{font-weight:750;margin-bottom:4px}
+  #tip .tr{display:flex;justify-content:space-between;gap:14px;margin:2px 0}
+  #tip .tr b{font-variant-numeric:tabular-nums;font-weight:700}
+
+  /* comparison bars */
+  .barrow{display:grid;grid-template-columns:96px 1fr auto;gap:10px;align-items:center;font-size:13px;margin:9px 0}
+  .barlab{font-weight:650}
+  .bartrack{min-width:60px}
+  .bar{background:var(--accent);border-radius:4px;height:12px;min-width:3px}
+  .barval{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+
+  /* explainer cards */
+  .exp{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+  @media (max-width:720px){ .exp{grid-template-columns:1fr} }
+  .exp .card{margin-top:0}
+  .exp h3{margin:0 0 6px;font-size:15px;font-weight:750;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .exp p{margin:0;font-size:13px;color:var(--muted)}
+  .tag{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent);border-radius:99px;padding:2px 8px}
+
+  footer{margin-top:26px;font-size:12px;color:var(--muted);line-height:1.6}
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important} }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">FCG</div>
+    <div>
+      <h1>Home Loan Calculator</h1>
+      <p class="sub">Malaysia · instalment, legal fees &amp; stamp duty, early settlement, flexi loans</p>
+    </div>
+  </header>
+
+  <!-- shared loan details -->
+  <section class="card">
+    <div class="eyebrow">Loan details</div>
+    <div class="grid g4">
+      <label class="f">Property price (SPA)
+        <span class="field"><span>RM</span><input id="price" type="number" inputmode="decimal" value="500000" min="0" step="10000"></span>
+      </label>
+      <label class="f">Down payment
+        <span class="field"><input id="down" type="number" inputmode="decimal" value="10" min="0" max="90" step="1"><span>%</span></span>
+      </label>
+      <label class="f">Interest rate (p.a.)
+        <span class="field"><input id="rate" type="number" inputmode="decimal" value="3.9" min="0" max="12" step="0.05"><span>%</span></span>
+      </label>
+      <label class="f">Tenure
+        <span class="field"><input id="tenure" type="number" inputmode="numeric" value="35" min="1" max="35" step="1"><span>yrs</span></span>
+      </label>
+    </div>
+    <p class="loanline">Loan amount <b id="loanAmt">—</b> &nbsp;·&nbsp; Margin of finance <b id="mof">—</b> &nbsp;·&nbsp; Down payment <b id="downRM">—</b></p>
+  </section>
+
+  <!-- tabs -->
+  <nav class="tabs" role="tablist" aria-label="Calculator sections">
+    <button class="tab on" data-tab="t1" role="tab" aria-selected="true">Loan + fees</button>
+    <button class="tab" data-tab="t2" role="tab" aria-selected="false">Pay early</button>
+    <button class="tab" data-tab="t3" role="tab" aria-selected="false">Flexi loans</button>
+    <button class="tab" data-tab="t4" role="tab" aria-selected="false">MRTA vs MLTA</button>
+  </nav>
+
+  <!-- TAB 1 : instalment + legal fees -->
+  <section class="panel on" id="t1">
+    <div class="tiles">
+      <div class="tile hero">
+        <div class="tl">Monthly instalment</div>
+        <div class="tv" id="mPay">—</div>
+        <div class="ts" id="mPaySub">—</div>
+      </div>
+      <div class="tile">
+        <div class="tl">Total interest</div>
+        <div class="tv sm" id="tInt">—</div>
+        <div class="ts">over full tenure</div>
+      </div>
+      <div class="tile">
+        <div class="tl">Total payment</div>
+        <div class="tv sm" id="tPay">—</div>
+        <div class="ts">principal + interest</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Legal fees &amp; stamp duty</div>
+      <div class="opts">
+        <label class="chk"><input type="checkbox" id="ftb"> First-time buyer stamp-duty exemption <span class="hint">100% off MOT + loan stamp duty for first residential home priced ≤ RM500k — confirm scheme is still in force with LHDN</span></label>
+        <label class="chk"><input type="checkbox" id="absSpa"> Developer absorbs SPA legal fee <span class="hint">common for new launches</span></label>
+        <label class="chk"><input type="checkbox" id="absLoan"> Developer absorbs loan legal fee</label>
+      </div>
+      <div id="ftbNote" class="notice" hidden></div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Item</th><th class="r">Amount</th></tr></thead>
+          <tbody>
+            <tr><td>SPA legal fee <span class="hint">SRO 2023 scale — 1.25% on first RM500k, 1% on next RM7m</span></td><td class="r" id="fSpaLegal">—</td></tr>
+            <tr><td>SPA disbursements <span class="hint">searches, registration, misc — editable estimate</span></td><td class="r"><input class="mini" id="dSpa" type="number" inputmode="decimal" value="2000" min="0" step="100"></td></tr>
+            <tr><td>Stamp duty on MOT <span class="hint">1% first RM100k · 2% to RM500k · 3% to RM1m · 4% above</span></td><td class="r" id="fMot">—</td></tr>
+            <tr><td>Loan legal fee <span class="hint">same SRO 2023 scale, on loan amount</span></td><td class="r" id="fLoanLegal">—</td></tr>
+            <tr><td>Loan disbursements <span class="hint">editable estimate</span></td><td class="r"><input class="mini" id="dLoan" type="number" inputmode="decimal" value="1500" min="0" step="100"></td></tr>
+            <tr><td>Stamp duty on loan agreement <span class="hint">0.5% of loan amount</span></td><td class="r" id="fLoanStamp">—</td></tr>
+            <tr><td>SST 8% on legal fees</td><td class="r" id="fSst">—</td></tr>
+            <tr class="total"><td>Total fees &amp; duties</td><td class="r" id="fTotal">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cashline">
+        <div><div class="cl">Down payment</div><div class="cv" id="cDown">—</div></div>
+        <div><div class="cl">Fees &amp; duties</div><div class="cv" id="cFees">—</div></div>
+        <div class="big"><div class="cl">Est. cash needed upfront</div><div class="cv" id="cTotal">—</div></div>
+      </div>
+      <p class="note">MOT stamp duty is payable when the title is transferred — for new launches where strata title comes later, this can fall 1–3 years after SPA. Developer packages often absorb legal fees; tick the boxes above to match the offer.</p>
+    </div>
+  </section>
+
+  <!-- TAB 2 : early settlement -->
+  <section class="panel" id="t2">
+    <div class="card">
+      <div class="eyebrow">Extra payments</div>
+      <div class="grid g3">
+        <label class="f">Extra paid every month
+          <span class="field"><span>RM</span><input id="xMonthly" type="number" inputmode="decimal" value="300" min="0" step="50"></span>
+        </label>
+        <label class="f">One-time lump sum
+          <span class="field"><span>RM</span><input id="xLump" type="number" inputmode="decimal" value="0" min="0" step="1000"></span>
+        </label>
+        <label class="f">Lump sum paid in year
+          <span class="field"><input id="xYear" type="number" inputmode="numeric" value="5" min="1" step="1"><span>yr</span></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="tiles">
+      <div class="tile hero gold">
+        <div class="tl">Interest saved</div>
+        <div class="tv" id="xSaved">—</div>
+        <div class="ts" id="xSavedSub">—</div>
+      </div>
+      <div class="tile">
+        <div class="tl">Finish earlier by</div>
+        <div class="tv sm" id="xFaster">—</div>
+        <div class="ts" id="xFasterSub">—</div>
+      </div>
+      <div class="tile">
+        <div class="tl">Debt-free by</div>
+        <div class="tv sm" id="xDate">—</div>
+        <div class="ts" id="xDateSub">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Loan balance over time</div>
+      <div class="legend">
+        <span><span class="sw" style="background:var(--c-base)"></span>Normal instalment</span>
+        <span><span class="sw" style="background:var(--c-save)"></span>With extra payments</span>
+      </div>
+      <div class="chartwrap">
+        <svg id="chart" role="img" aria-label="Loan balance over time, comparing normal instalment against paying extra"></svg>
+        <div id="tip"></div>
+      </div>
+      <p class="note">Most loans have a lock-in period (typically the first 3–5 years): full settlement during lock-in usually triggers a 2–3% penalty, but normal extra payments like these are fine with almost every bank.</p>
+    </div>
+  </section>
+
+  <!-- TAB 3 : flexi comparison -->
+  <section class="panel" id="t3">
+    <div class="card">
+      <div class="eyebrow">Cash you can park in the loan</div>
+      <div class="grid g3">
+        <label class="f">Cash parked from day 1
+          <span class="field"><span>RM</span><input id="fxCash" type="number" inputmode="decimal" value="30000" min="0" step="5000"></span>
+        </label>
+        <label class="f">Added every month
+          <span class="field"><span>RM</span><input id="fxMonthly" type="number" inputmode="decimal" value="500" min="0" step="100"></span>
+        </label>
+        <label class="f">Full-flexi account fee
+          <span class="field"><span>RM</span><input id="fxFee" type="number" inputmode="decimal" value="10" min="0" step="5"><span>/mth</span></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Same money, three loan types</div>
+      <div class="tablewrap">
+        <table id="flexTable">
+          <thead>
+            <tr><th>Loan type</th><th class="r">Total interest</th><th class="r">Saved vs term</th><th class="r">Debt-free in</th><th class="r">Account fees</th><th>Your cash</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><b>Term loan</b> <span class="hint">cash sits in your bank, loan untouched</span></td><td class="r" id="ftInt">—</td><td class="r">—</td><td class="r" id="ftTime">—</td><td class="r">—</td><td><span class="hint">In your savings account, untouched by the loan</span></td></tr>
+            <tr><td><b>Semi-flexi</b> <span class="hint">cash paid into loan as capital repayment</span></td><td class="r" id="fsInt">—</td><td class="r" id="fsSaved">—</td><td class="r" id="fsTime">—</td><td class="r">—</td><td><span class="hint">Locked in the loan — redraw needs a request + fee</span></td></tr>
+            <tr><td><b>Full flexi</b> <span class="hint">cash parked in linked current account</span></td><td class="r" id="ffInt">—</td><td class="r" id="ffSaved">—</td><td class="r" id="ffTime">—</td><td class="r" id="ffFees">—</td><td><span class="hint">Withdraw anytime, like a normal account</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="fxBars" style="margin-top:14px"></div>
+      <p class="note" id="fxNote">* Full flexi “debt-free” = the month your parked cash equals the remaining balance — you could settle in full that day and stop paying interest. Assumes the cash stays parked. Semi-flexi and full flexi save a near-identical amount of interest; the real difference is access to your money and the small account fee.</p>
+    </div>
+
+    <div class="exp">
+      <div class="card">
+        <h3>Term loan</h3>
+        <p>Fixed instalment, fixed schedule. Extra payments usually need a written request, and once paid in, the money cannot be taken back. Some banks price it slightly cheaper.</p>
+      </div>
+      <div class="card">
+        <h3>Semi-flexi <span class="tag">Most common</span></h3>
+        <p>Pay extra any time to cut principal and interest. Withdrawing the extra back (redraw) needs a bank request, a processing fee (commonly RM25–50) and a few working days. Most standard mortgages today are semi-flexi.</p>
+      </div>
+      <div class="card">
+        <h3>Full flexi</h3>
+        <p>Loan linked to a current account. Every ringgit parked there reduces the balance charged interest — calculated daily. Withdraw anytime with no questions. Usually a small monthly account fee (RM5–10), occasionally a slightly higher rate.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 4 : MRTA vs MLTA -->
+  <section class="panel" id="t4">
+    <div class="card">
+      <div class="eyebrow">Cover details</div>
+      <div class="grid g4">
+        <label class="f">Age next birthday
+          <span class="field"><input id="insAge" type="number" inputmode="numeric" value="30" min="18" max="60" step="1"><span>yrs</span></span>
+        </label>
+        <label class="f">Coverage amount
+          <span class="field"><span>RM</span><input id="insSum" type="number" inputmode="decimal" value="450000" min="0" step="10000" data-auto="1"></span>
+        </label>
+        <label class="f">Coverage term
+          <span class="field"><input id="insTerm" type="number" inputmode="numeric" value="35" min="5" max="40" step="1" data-auto="1"><span>yrs</span></span>
+        </label>
+        <label class="chk" style="align-self:end"><input type="checkbox" id="insFin" checked> Finance MRTA premium into the loan</label>
+      </div>
+      <div id="insAgeNote" class="notice warn" hidden></div>
+    </div>
+
+    <div class="tiles">
+      <div class="tile hero">
+        <div class="tl">MRTA — one-time premium</div>
+        <div class="tv" id="mrtaPrem">—</div>
+        <div class="ts" id="mrtaSub">—</div>
+      </div>
+      <div class="tile">
+        <div class="tl">MLTA — monthly premium</div>
+        <div class="tv sm" id="mltaMo">—</div>
+        <div class="ts" id="mltaYr">—</div>
+      </div>
+      <div class="tile">
+        <div class="tl">MLTA — total over term</div>
+        <div class="tv sm" id="mltaTot">—</div>
+        <div class="ts">pure term plan — savings-linked plans cost 2–3×</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Which one suits your client</div>
+      <div class="tablewrap">
+        <table id="insTable">
+          <thead><tr><th></th><th>MRTA</th><th>MLTA</th></tr></thead>
+          <tbody>
+            <tr><td><b>Payment</b></td><td>One-time, usually financed into the loan</td><td>Monthly or yearly, for the whole term</td></tr>
+            <tr><td><b>Coverage</b></td><td>Shrinks together with the loan balance</td><td>Stays level — the extra above the balance goes to the family</td></tr>
+            <tr><td><b>Payout goes to</b></td><td>The bank — loan settled, house stays with the family</td><td>The family (nomination/trust) — they settle the loan, keep the rest</td></tr>
+            <tr><td><b>If you refinance</b></td><td>Usually not transferable — new MRTA at your new age</td><td>Portable — the same policy follows you to the new loan</td></tr>
+            <tr><td><b>Cash value</b></td><td>None — pure protection</td><td>Some plans build cash value (those cost more)</td></tr>
+            <tr><td><b>Best for</b></td><td>Cheapest way to protect the loan</td><td>Breadwinners who want family protection + flexibility</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Premiums are indicative market estimates for a non-smoker with standard health, covering death &amp; TPD — actual quotes vary by insurer, gender, health and product. MRTA financing cost is calculated at your loan rate over the full tenure. Always get the exact quote from the bank's panel insurer or an agent.</p>
+    </div>
+  </section>
+
+  <footer>
+    Estimates for illustration only — monthly-rest calculation (most banks use daily rest, figures shift slightly). Legal fees per Solicitors' Remuneration Order 2023; stamp duty per current tiers; 8% SST on legal fees. MRTA/MLTA premiums are indicative — final pricing comes from the insurer's quote. Not a loan offer, quotation or financial advice — confirm exact figures with your banker and lawyer.<br>
+    FCG · Etrend Realty Malaysia
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  function num(id){
+    var v = parseFloat($(id).value);
+    return (isFinite(v) && v >= 0) ? v : 0;
+  }
+  function RM(v){
+    if(!isFinite(v)) return "—";
+    return "RM " + Math.round(v).toLocaleString("en-US");
+  }
+  function RM2(v){
+    if(!isFinite(v)) return "—";
+    return "RM " + v.toLocaleString("en-US",{minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+  function dur(mo){
+    if(!isFinite(mo)) return "—";
+    mo = Math.round(mo);
+    var y = Math.floor(mo/12), m = mo % 12;
+    if(y <= 0) return m + " mth";
+    if(m === 0) return y + " yrs";
+    return y + " yrs " + m + " mth";
+  }
+  function dateAfter(mo){
+    if(!isFinite(mo)) return "—";
+    var d = new Date();
+    var t = new Date(d.getFullYear(), d.getMonth() + Math.round(mo), 1);
+    return MONTHS[t.getMonth()] + " " + t.getFullYear();
+  }
+  function kfmt(v){
+    if(v >= 1e6) return "RM" + (v/1e6).toFixed(1).replace(/\.0$/,"") + "M";
+    if(v >= 1000) return "RM" + Math.round(v/1000) + "k";
+    return "RM" + Math.round(v);
+  }
+
+  function pmt(L, rate, n){
+    if(L <= 0 || n <= 0) return 0;
+    var i = rate/1200;
+    if(i === 0) return L/n;
+    return L * i / (1 - Math.pow(1+i, -n));
+  }
+
+  // Amortization simulator (monthly rest).
+  // opts: extra (RM/mth), lump + lumpMonth (applied at start of that month),
+  //       offset0 + offsetMonthly (full-flexi linked account), all optional.
+  function simulate(L, rate, n, opts){
+    opts = opts || {};
+    var i = rate/1200, M = pmt(L, rate, n);
+    var bal = L, off = opts.offset0 || 0, m = 0, tot = 0, eff = 0;
+    var extra = opts.extra || 0, lump = opts.lump || 0, lumpM = opts.lumpMonth || 0, offAdd = opts.offsetMonthly || 0;
+    var pts = [[0, L]];
+    var cap = n + 1200;
+    if(L <= 0) return {months:0, interest:0, payment:0, pts:pts, eff:0};
+    if(off >= bal) eff = 0; // already coverable on day one
+    while(bal > 0.005 && m < cap){
+      m++;
+      if(lump > 0 && m === lumpM) bal = Math.max(0, bal - lump);
+      if(bal <= 0.005) { pts.push([m, 0]); break; }
+      var interest = Math.max(0, bal - off) * i;
+      tot += interest;
+      var principal = M + extra - interest;
+      if(principal <= 0) return {months:Infinity, interest:Infinity, payment:M, pts:pts, eff:Infinity};
+      if(principal > bal) principal = bal;
+      bal -= principal;
+      off += offAdd;
+      if(!eff && off > 0 && bal <= off) eff = m;
+      if(m % 12 === 0 || bal <= 0.005) pts.push([m, Math.max(0, bal)]);
+    }
+    if(!eff) eff = m;
+    return {months:m, interest:tot, payment:M, pts:pts, eff:eff};
+  }
+
+  // Legal fee — Solicitors' Remuneration Order 2023 scale
+  function legalFee(v){
+    if(v <= 0) return 0;
+    var f = Math.min(v, 500000) * 0.0125;
+    if(v > 500000) f += (Math.min(v, 7500000) - 500000) * 0.01;
+    if(v > 7500000) f += (v - 7500000) * 0.01; // negotiable, capped at 1%
+    return Math.max(f, 500);
+  }
+  // Stamp duty on transfer (MOT)
+  function motDuty(v){
+    if(v <= 0) return 0;
+    var d = Math.min(v, 100000) * 0.01;
+    if(v > 100000) d += (Math.min(v, 500000) - 100000) * 0.02;
+    if(v > 500000) d += (Math.min(v, 1000000) - 500000) * 0.03;
+    if(v > 1000000) d += (v - 1000000) * 0.04;
+    return d;
+  }
+
+  // ---- MRTA / MLTA indicative rate tables ----
+  // MRTA: single premium per RM1,000 sum assured (reducing cover, non-smoker, standard health)
+  var MRTA_AGES = [25,30,35,40,45,50,55];
+  var MRTA_TEN  = [5,10,15,20,25,30,35];
+  var MRTA_RATE = [
+    [2.0, 4.5, 8.0, 12,  16,  20,  25 ],
+    [2.5, 5.5, 10,  15,  20,  26,  32 ],
+    [3.5, 8.0, 14,  21,  28,  36,  45 ],
+    [5.5, 12,  20,  30,  40,  52,  65 ],
+    [8.5, 18,  30,  44,  58,  75,  92 ],
+    [13,  27,  44,  64,  85,  110, 140],
+    [20,  40,  65,  92,  125, 160, 200]
+  ];
+  // MLTA: level term, annual premium per RM1,000 by entry age (pure protection)
+  var MLTA_AGES  = [25,30,35,40,45,50,55];
+  var MLTA_RATES = [2.2,2.6,3.5,5.0,7.5,11,16];
+
+  function lerp(a,b,t){ return a + (b-a)*t; }
+  function interp1(xs, ys, x){
+    x = Math.min(Math.max(x, xs[0]), xs[xs.length-1]);
+    var i = 0;
+    while(i < xs.length-2 && x > xs[i+1]) i++;
+    var t = (x - xs[i]) / (xs[i+1] - xs[i]);
+    return lerp(ys[i], ys[i+1], t);
+  }
+  function gridRate(ages, tens, table, age, ten){
+    age = Math.min(Math.max(age, ages[0]), ages[ages.length-1]);
+    ten = Math.min(Math.max(ten, tens[0]), tens[tens.length-1]);
+    var i = 0; while(i < ages.length-2 && age > ages[i+1]) i++;
+    var j = 0; while(j < tens.length-2 && ten > tens[j+1]) j++;
+    var ta = (age - ages[i]) / (ages[i+1] - ages[i]);
+    var tt = (ten - tens[j]) / (tens[j+1] - tens[j]);
+    var r1 = lerp(table[i][j],   table[i][j+1],   tt);
+    var r2 = lerp(table[i+1][j], table[i+1][j+1], tt);
+    return lerp(r1, r2, ta);
+  }
+
+  // ---- chart ----
+  var CH = null; // current chart state for hover
+  var W = 640, H = 300, PL = 56, PR = 14, PT = 14, PB = 32;
+  var IW = W - PL - PR, IH = H - PT - PB;
+
+  function balAt(sim, yr){
+    var m = yr * 12;
+    if(m >= sim.months) return 0;
+    for(var k = 0; k < sim.pts.length; k++){
+      if(sim.pts[k][0] === m) return sim.pts[k][1];
+    }
+    return null;
+  }
+
+  function drawChart(base, sc, L){
+    var svg = $("chart");
+    var xMax = Math.max(base.months, sc.months, 12) / 12;
+    var yMax = Math.max(L, 1);
+    var X = function(yr){ return PL + IW * (yr / xMax); };
+    var Y = function(v){ return PT + IH * (1 - v / yMax); };
+    var g = "";
+    for(var k = 0; k <= 4; k++){
+      var val = yMax * k / 4, y = Y(val);
+      g += '<line class="grid-ln" x1="'+PL+'" y1="'+y.toFixed(1)+'" x2="'+(W-PR)+'" y2="'+y.toFixed(1)+'"/>';
+      g += '<text class="ax" x="'+(PL-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end">'+kfmt(val)+'</text>';
+    }
+    var stepYr = xMax > 26 ? 10 : 5;
+    for(var yr = 0; yr <= Math.floor(xMax); yr += stepYr){
+      g += '<text class="ax" x="'+X(yr).toFixed(1)+'" y="'+(H-10)+'" text-anchor="middle">'+(yr===0 ? "Now" : "Yr "+yr)+'</text>';
+    }
+    var path = function(pts){
+      var s = "";
+      for(var k2 = 0; k2 < pts.length; k2++){
+        s += (k2 ? "L" : "M") + X(pts[k2][0]/12).toFixed(1) + " " + Y(pts[k2][1]).toFixed(1);
+      }
+      return s;
+    };
+    g += '<path class="ln base" d="'+path(base.pts)+'"/>';
+    g += '<path class="ln save" d="'+path(sc.pts)+'"/>';
+    var be = base.pts[base.pts.length-1], se = sc.pts[sc.pts.length-1];
+    g += '<circle class="dot base" cx="'+X(be[0]/12).toFixed(1)+'" cy="'+Y(be[1]).toFixed(1)+'" r="4"/>';
+    g += '<circle class="dot save" cx="'+X(se[0]/12).toFixed(1)+'" cy="'+Y(se[1]).toFixed(1)+'" r="4"/>';
+    g += '<line id="xh" class="xhair" y1="'+PT+'" y2="'+(PT+IH)+'" x1="-10" x2="-10" visibility="hidden"/>';
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.innerHTML = g;
+    CH = {base:base, sc:sc, xMax:xMax, X:X};
+  }
+
+  function hideTip(){
+    $("tip").style.display = "none";
+    var xh = $("xh");
+    if(xh) xh.setAttribute("visibility","hidden");
+  }
+
+  function onMove(e){
+    if(!CH) return;
+    var svg = $("chart"), rect = svg.getBoundingClientRect();
+    if(rect.width === 0) return;
+    var sx = (e.clientX - rect.left) / rect.width * W;
+    var yr = Math.round((sx - PL) / IW * CH.xMax);
+    if(yr < 0) yr = 0;
+    var maxYr = Math.floor(CH.xMax);
+    if(yr > maxYr) yr = maxYr;
+    var b = balAt(CH.base, yr), s = balAt(CH.sc, yr);
+    if(b === null || s === null) { hideTip(); return; }
+    var xh = $("xh"), px = CH.X(yr);
+    xh.setAttribute("x1", px); xh.setAttribute("x2", px);
+    xh.setAttribute("visibility","visible");
+    var thisYear = new Date().getFullYear() + yr;
+    var html = '<div class="tt">Year ' + yr + ' · ' + thisYear + '</div>';
+    html += '<div class="tr"><span><span class="sw" style="background:var(--c-base)"></span>Normal</span><b>' + RM(b) + '</b></div>';
+    html += '<div class="tr"><span><span class="sw" style="background:var(--c-save)"></span>With extra</span><b>' + (s <= 0 ? "Settled ✓" : RM(s)) + '</b></div>';
+    if(b - s > 1) html += '<div class="tr"><span>You owe less</span><b>' + RM(b - s) + '</b></div>';
+    var tip = $("tip");
+    tip.innerHTML = html;
+    tip.style.display = "block";
+    var wrap = svg.parentElement, wrect = wrap.getBoundingClientRect();
+    var left = px / W * rect.width + 14;
+    if(left + 180 > wrect.width) left = px / W * rect.width - 190;
+    tip.style.left = Math.max(0, left) + "px";
+    tip.style.top = "18px";
+  }
+
+  // ---- main recalc ----
+  function recalc(){
+    var price = num("price");
+    var downPct = Math.min(100, num("down"));
+    var rate = num("rate");
+    var yrs = Math.min(50, Math.max(1, num("tenure") || 1));
+    var n = Math.round(yrs * 12);
+    var loan = price * (1 - downPct/100);
+    var downRM = price * downPct/100;
+
+    $("loanAmt").textContent = RM(loan);
+    $("mof").textContent = (100 - downPct).toFixed(0) + "%";
+    $("downRM").textContent = RM(downRM);
+
+    var base = simulate(loan, rate, n);
+    var M = base.payment;
+
+    // Tab 1 — instalment
+    $("mPay").textContent = RM2(M);
+    $("mPaySub").textContent = rate.toFixed(2) + "% p.a. · " + yrs + " years · monthly rest";
+    $("tInt").textContent = RM(base.interest);
+    $("tPay").textContent = RM(loan + base.interest);
+
+    // Tab 1 — fees
+    var ftb = $("ftb").checked, absS = $("absSpa").checked, absL = $("absLoan").checked;
+    var spaLegal = absS ? 0 : legalFee(price);
+    var loanLegal = absL ? 0 : legalFee(loan);
+    var mot = motDuty(price);
+    var loanStamp = loan * 0.005;
+    var note = "", warn = false;
+    if(ftb){
+      if(price <= 500000){
+        mot = 0; loanStamp = 0;
+        note = "100% stamp-duty exemption applied — MOT and loan agreement duty waived for a first residential home priced up to RM500,000.";
+      } else {
+        warn = true;
+        note = "No exemption applied — the first-time buyer exemption covers homes priced up to RM500,000 only. This property is " + RM(price) + ".";
+      }
+    }
+    var fn = $("ftbNote");
+    fn.hidden = !note;
+    fn.textContent = note;
+    fn.className = "notice" + (warn ? " warn" : "");
+
+    var dSpa = num("dSpa"), dLoan = num("dLoan");
+    var sst = (spaLegal + loanLegal) * 0.08;
+    var totalFees = spaLegal + dSpa + mot + loanLegal + dLoan + loanStamp + sst;
+
+    $("fSpaLegal").textContent = absS ? "Absorbed" : RM(spaLegal);
+    $("fMot").textContent = RM(mot);
+    $("fLoanLegal").textContent = absL ? "Absorbed" : RM(loanLegal);
+    $("fLoanStamp").textContent = RM(loanStamp);
+    $("fSst").textContent = RM(sst);
+    $("fTotal").textContent = RM(totalFees);
+    $("cDown").textContent = RM(downRM);
+    $("cFees").textContent = RM(totalFees);
+    $("cTotal").textContent = RM(downRM + totalFees);
+
+    // Tab 2 — early settlement
+    var xm = num("xMonthly"), xl = num("xLump");
+    var xy = Math.max(1, Math.min(yrs, num("xYear") || 1));
+    var sc = simulate(loan, rate, n, {extra:xm, lump:xl, lumpMonth:Math.round(xy*12)});
+    var saved = base.interest - sc.interest;
+    var moSaved = base.months - sc.months;
+
+    $("xSaved").textContent = RM(saved);
+    $("xSavedSub").textContent = "Total interest becomes " + RM(sc.interest) + " (was " + RM(base.interest) + ")";
+    $("xFaster").textContent = dur(moSaved);
+    $("xFasterSub").textContent = "Loan done in " + dur(sc.months) + " instead of " + dur(base.months);
+    $("xDate").textContent = dateAfter(sc.months);
+    $("xDateSub").textContent = "instead of " + dateAfter(base.months);
+
+    if(loan > 0){ drawChart(base, sc, loan); } else { $("chart").innerHTML = ""; CH = null; }
+    hideTip();
+
+    // Tab 3 — flexi comparison
+    var cash = num("fxCash"), mSave = num("fxMonthly"), fee = num("fxFee");
+    var semi = simulate(loan, rate, n, {lump:cash, lumpMonth:1, extra:mSave});
+    var full = simulate(loan, rate, n, {offset0:cash, offsetMonthly:mSave});
+    var fullFees = fee * full.eff;
+
+    $("ftInt").textContent = RM(base.interest);
+    $("ftTime").textContent = dur(base.months);
+    $("fsInt").textContent = RM(semi.interest);
+    $("fsSaved").textContent = RM(base.interest - semi.interest);
+    $("fsTime").textContent = dur(semi.months);
+    $("ffInt").textContent = RM(full.interest);
+    $("ffSaved").textContent = RM(base.interest - full.interest);
+    $("ffTime").textContent = dur(full.eff) + " *";
+    $("ffFees").textContent = RM(fullFees);
+
+    var maxInt = Math.max(base.interest, semi.interest, full.interest, 1);
+    var bars = [
+      ["Term loan", base.interest],
+      ["Semi-flexi", semi.interest],
+      ["Full flexi", full.interest]
+    ];
+    var bh = "";
+    for(var k = 0; k < bars.length; k++){
+      var pct = Math.max(0.5, bars[k][1] / maxInt * 100);
+      bh += '<div class="barrow"><span class="barlab">' + bars[k][0] + '</span>' +
+            '<span class="bartrack"><span class="bar" style="width:' + pct.toFixed(1) + '%; display:block"></span></span>' +
+            '<span class="barval">' + RM(bars[k][1]) + '</span></div>';
+    }
+    $("fxBars").innerHTML = '<div class="eyebrow" style="margin-bottom:6px">Total interest paid</div>' + bh;
+
+    // Tab 4 — MRTA vs MLTA
+    var sumEl = $("insSum"), termEl = $("insTerm");
+    if(sumEl.dataset.auto === "1") sumEl.value = Math.round(loan);
+    if(termEl.dataset.auto === "1") termEl.value = yrs;
+    var age = Math.min(60, Math.max(18, num("insAge") || 30));
+    var sum = num("insSum");
+    var term = Math.min(40, Math.max(5, num("insTerm") || yrs));
+
+    var an = $("insAgeNote");
+    if(age + term > 70){
+      an.hidden = false;
+      an.textContent = "Heads up: this cover would run until age " + (age + term) + ". Many insurers cap MRTA/MLTA cover at age 65–70, so the offered term may be shorter — or the premium loaded.";
+    } else {
+      an.hidden = true;
+    }
+
+    var mrta = sum / 1000 * gridRate(MRTA_AGES, MRTA_TEN, MRTA_RATE, age, term);
+    $("mrtaPrem").textContent = RM(mrta);
+    if($("insFin").checked && loan > 0 && mrta > 0 && isFinite(M)){
+      var M2 = pmt(loan + mrta, rate, n);
+      var extraMo = M2 - M;
+      var extraInt = extraMo * n - mrta;
+      $("mrtaSub").textContent = "Financed into loan: instalment becomes " + RM2(M2) + " (+" + RM2(extraMo) + "/mth) · extra interest " + RM(extraInt) + " over tenure";
+    } else {
+      $("mrtaSub").textContent = "Paid upfront in cash — nothing added to the loan";
+    }
+
+    var mltaYearly = sum / 1000 * interp1(MLTA_AGES, MLTA_RATES, age) * (1 + Math.max(0, term - 20) * 0.015);
+    $("mltaMo").textContent = RM2(mltaYearly / 12);
+    $("mltaYr").textContent = "≈ " + RM(mltaYearly) + " per year";
+    $("mltaTot").textContent = RM(mltaYearly * term);
+  }
+
+  // ---- wiring ----
+  document.addEventListener("input", recalc);
+  document.addEventListener("change", recalc);
+
+  var tabs = document.querySelectorAll(".tab");
+  tabs.forEach(function(b){
+    b.addEventListener("click", function(){
+      tabs.forEach(function(x){
+        var on = x === b;
+        x.classList.toggle("on", on);
+        x.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      document.querySelectorAll(".panel").forEach(function(p){
+        p.classList.toggle("on", p.id === b.dataset.tab);
+      });
+    });
+  });
+
+  ["insSum","insTerm"].forEach(function(id){
+    $(id).addEventListener("input", function(e){
+      if(e.isTrusted) this.dataset.auto = "0";
+    });
+  });
+
+  var svg = $("chart");
+  svg.addEventListener("pointermove", onMove);
+  svg.addEventListener("pointerdown", onMove);
+  svg.addEventListener("pointerleave", hideTip);
+
+  recalc();
+})();
+</script>
+</body>
+</html>
