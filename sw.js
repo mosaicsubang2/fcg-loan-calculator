@@ -1,8 +1,10 @@
 /* FCG Home Loan Calculator — offline cache */
-var CACHE = "fcg-loan-v1";
+var CACHE = "fcg-loan-v2";
 var ASSETS = [
   "./",
   "./index.html",
+  "./eligibility.html",
+  "./analytics.js",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",

@@ -69,6 +69,9 @@
   .top-actions{margin-left:auto;display:flex;gap:8px}
   .icon-btn{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 86%,transparent);color:var(--ink);font-size:17px;cursor:pointer;display:grid;place-items:center;transition:transform .18s,background-color .18s,border-color .18s}
   .icon-btn:hover{transform:translateY(-1px);border-color:var(--accent);background:var(--accent-soft)}
+  .nav-link{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:650;color:var(--accent);text-decoration:none;margin-bottom:4px}
+  .nav-link:hover{text-decoration:underline}
+  .visit-badge{font-size:11.5px;color:var(--muted)}
 
   /* cards + inputs */
   .card{background:color-mix(in srgb,var(--surface) 94%,transparent);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:16px;box-shadow:var(--shadow)}
@@ -216,6 +219,8 @@
       <button class="icon-btn" id="themeToggle" type="button" aria-label="Toggle colour theme" title="Toggle colour theme">◐</button>
     </div>
   </header>
+
+  <a class="nav-link" href="./eligibility.html">Loan eligibility (DSR &amp; NDI) calculator →</a>
 
   <!-- shared loan details -->
   <section class="card">
@@ -446,8 +451,11 @@
   <footer>
     Estimates for illustration only — monthly-rest calculation (most banks use daily rest, figures shift slightly). Legal fees per Solicitors' Remuneration Order 2023; stamp duty per current tiers; 8% SST on legal fees. MRTA/MLTA premiums are indicative — final pricing comes from the insurer's quote. Not a loan offer, quotation or financial advice — confirm exact figures with your banker and lawyer.<br>
     FCG · Etrend Realty Malaysia
+    <div class="visit-badge" hidden><span id="visitCount"></span></div>
   </footer>
 </div>
+
+<script src="./analytics.js"></script>
 
 <script>
 (function(){
