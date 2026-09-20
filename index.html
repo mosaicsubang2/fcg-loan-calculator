@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FCG Home Loan Calculator</title>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#17614A">
+<meta name="theme-color" content="#F7F8F5">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,60 +15,64 @@
 <body>
 <style>
   :root{
-    --bg:#F4F6F4; --surface:#FFFFFF; --ink:#1B2420; --muted:#5F6E66; --line:#E1E7E2;
-    --accent:#17614A; --on-accent:#FFFFFF; --accent-soft:#E3EFE9;
-    --gold-bg:#F5EAD1; --gold-ink:#6B4E14;
-    --c-base:#7C5CBF; --c-save:#177B52;
-    --shadow:0 4px 14px rgba(15,30,22,.12);
-    --radius:14px;
+    --bg:#F7F8F5; --surface:#FFFFFF; --ink:#29322E; --muted:#6E7C75; --line:#E3E9E4;
+    --accent:#537D6D; --accent-2:#7197AB; --on-accent:#FFFFFF; --accent-soft:#E8F1EC;
+    --gold-bg:#EAF2F6; --gold-ink:#4F7181;
+    --c-base:#77838A; --c-save:#5B8E78;
+    --shadow:0 12px 32px rgba(35,56,46,.07),0 2px 6px rgba(35,56,46,.035);
+    --shadow-hover:0 18px 40px rgba(35,56,46,.11),0 3px 8px rgba(35,56,46,.055);
+    --radius:18px;
   }
   @media (prefers-color-scheme: dark){
     :root{
-      --bg:#0E1411; --surface:#161D18; --ink:#E7EEE8; --muted:#96A59B; --line:#28322B;
-      --accent:#3FA97E; --on-accent:#0B1410; --accent-soft:#1C2C24;
-      --gold-bg:#342B12; --gold-ink:#E3C77D;
-      --c-base:#9878E8; --c-save:#38A878;
-      --shadow:0 4px 14px rgba(0,0,0,.45);
+      --bg:#111514; --surface:#1A211E; --ink:#F0F5F1; --muted:#A8B6AD; --line:#2C3731;
+      --accent:#85AA99; --accent-2:#91B4C7; --on-accent:#142019; --accent-soft:#223129;
+      --gold-bg:#1D2D35; --gold-ink:#A8CBDC;
+      --c-base:#C4CED2; --c-save:#8FC4A9;
+      --shadow:0 4px 14px rgba(0,0,0,.52);
     }
   }
   :root[data-theme="light"]{
-    --bg:#F4F6F4; --surface:#FFFFFF; --ink:#1B2420; --muted:#5F6E66; --line:#E1E7E2;
-    --accent:#17614A; --on-accent:#FFFFFF; --accent-soft:#E3EFE9;
-    --gold-bg:#F5EAD1; --gold-ink:#6B4E14;
-    --c-base:#7C5CBF; --c-save:#177B52;
-    --shadow:0 4px 14px rgba(15,30,22,.12);
+    --bg:#F7F8F5; --surface:#FFFFFF; --ink:#29322E; --muted:#6E7C75; --line:#E3E9E4;
+    --accent:#537D6D; --accent-2:#7197AB; --on-accent:#FFFFFF; --accent-soft:#E8F1EC;
+    --gold-bg:#EAF2F6; --gold-ink:#4F7181;
+    --c-base:#77838A; --c-save:#5B8E78;
+    --shadow:0 4px 14px rgba(35,56,46,.10);
   }
   :root[data-theme="dark"]{
-    --bg:#0E1411; --surface:#161D18; --ink:#E7EEE8; --muted:#96A59B; --line:#28322B;
-    --accent:#3FA97E; --on-accent:#0B1410; --accent-soft:#1C2C24;
-    --gold-bg:#342B12; --gold-ink:#E3C77D;
-    --c-base:#9878E8; --c-save:#38A878;
-    --shadow:0 4px 14px rgba(0,0,0,.45);
+    --bg:#111514; --surface:#1A211E; --ink:#F0F5F1; --muted:#A8B6AD; --line:#2C3731;
+    --accent:#85AA99; --accent-2:#91B4C7; --on-accent:#142019; --accent-soft:#223129;
+    --gold-bg:#1D2D35; --gold-ink:#A8CBDC;
+    --c-base:#C4CED2; --c-save:#8FC4A9;
+    --shadow:0 4px 14px rgba(0,0,0,.52);
   }
   html,body{margin:0;padding:0}
   body{
-    background:var(--bg); color:var(--ink);
+    background:radial-gradient(circle at 8% 0%,rgba(83,125,109,.09),transparent 27rem),radial-gradient(circle at 95% 12%,rgba(113,151,171,.13),transparent 24rem),var(--bg); color:var(--ink);
     font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
     font-size:15px; line-height:1.55;
     -webkit-text-size-adjust:100%;
   }
   *{box-sizing:border-box}
-  .wrap{max-width:880px;margin:0 auto;padding:24px 16px 60px}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 20px 72px}
 
   /* header */
-  .top{display:flex;align-items:center;gap:14px}
+  .top{display:flex;align-items:center;gap:14px;padding:4px 2px 18px}
   .brand{
     width:46px;height:46px;flex:0 0 auto;border-radius:12px;
-    background:var(--accent);color:var(--on-accent);
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--on-accent);
     display:flex;align-items:center;justify-content:center;
-    font-weight:800;font-size:15px;letter-spacing:.02em;
+    font-weight:850;font-size:15px;letter-spacing:.02em;box-shadow:0 8px 16px rgba(83,125,109,.16);
   }
-  .top h1{margin:0;font-size:22px;font-weight:800;letter-spacing:-.01em;line-height:1.2;text-wrap:balance}
+  .top h1{margin:0;font-size:clamp(22px,3vw,28px);font-weight:850;letter-spacing:-.035em;line-height:1.15;text-wrap:balance}
   .top .sub{margin:3px 0 0;font-size:13px;color:var(--muted)}
+  .top-actions{margin-left:auto;display:flex;gap:8px}
+  .icon-btn{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 86%,transparent);color:var(--ink);font-size:17px;cursor:pointer;display:grid;place-items:center;transition:transform .18s,background-color .18s,border-color .18s}
+  .icon-btn:hover{transform:translateY(-1px);border-color:var(--accent);background:var(--accent-soft)}
 
   /* cards + inputs */
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-top:14px}
-  .eyebrow{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .card{background:color-mix(in srgb,var(--surface) 94%,transparent);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:16px;box-shadow:var(--shadow)}
+  .eyebrow{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
   .grid{display:grid;gap:12px}
   .g4{grid-template-columns:repeat(4,1fr)}
   .g3{grid-template-columns:repeat(3,1fr)}
@@ -76,7 +80,7 @@
   label.f{display:block;font-size:12.5px;font-weight:600;color:var(--muted)}
   .field{
     display:flex;align-items:center;gap:6px;margin-top:6px;
-    background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 12px;
+    background:color-mix(in srgb,var(--bg) 76%,var(--surface));border:1px solid var(--line);border-radius:11px;padding:10px 12px;transition:border-color .18s,box-shadow .18s,background-color .18s;
   }
   .field:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
   .field input{
@@ -87,34 +91,38 @@
   }
   .field input:focus{outline:none}
   .field span{color:var(--muted);font-size:12.5px;font-weight:600;flex:0 0 auto}
-  .loanline{margin-top:12px;font-size:13.5px;color:var(--muted)}
+  .loanline{margin:16px 0 0;padding:11px 13px;background:var(--accent-soft);border-radius:10px;font-size:13.5px;color:var(--muted)}
   .loanline b{color:var(--ink);font-weight:750;font-variant-numeric:tabular-nums}
 
   /* tabs */
-  .tabs{display:flex;gap:4px;margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;overflow-x:auto}
+  .tabs{position:sticky;top:10px;z-index:10;display:flex;gap:4px;margin-top:20px;background:color-mix(in srgb,var(--surface) 90%,transparent);backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:14px;padding:5px;overflow-x:auto;box-shadow:0 6px 20px rgba(35,56,46,.07)}
   .tab{
     flex:1;white-space:nowrap;border:0;background:none;color:var(--muted);
     font-family:inherit;font-weight:650;font-size:13.5px;
-    padding:9px 12px;border-radius:9px;cursor:pointer;
-    transition:background-color .15s,color .15s;
+    padding:10px 13px;border-radius:10px;cursor:pointer;
+    transition:background-color .15s,color .15s,transform .15s;
   }
-  .tab.on{background:var(--accent);color:var(--on-accent)}
+  .tab.on{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--on-accent);box-shadow:0 5px 12px rgba(83,125,109,.16)}
+  .tab:active{transform:scale(.98)}
   .tab:not(.on):hover{color:var(--ink)}
   button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .panel{display:none}
-  .panel.on{display:block}
+  .panel.on{display:block;animation:panel-in .22s ease-out}
+  @keyframes panel-in{from{opacity:.35;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 
   /* stat tiles */
-  .tiles{display:grid;gap:12px;grid-template-columns:1.4fr 1fr 1fr;margin-top:14px}
+  .tiles{display:grid;gap:14px;grid-template-columns:1.4fr 1fr 1fr;margin-top:16px}
+  #t1 .tiles{grid-template-columns:1fr}
   @media (max-width:720px){
     .tiles{grid-template-columns:1fr 1fr}
     .tile.hero{grid-column:1 / -1}
   }
-  .tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+  .tile{background:color-mix(in srgb,var(--surface) 94%,transparent);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
   .tile .tl{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
   .tile .tv{margin-top:6px;font-size:30px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.15;overflow-wrap:anywhere}
   .tile .tv.sm{font-size:20px}
   .tile .ts{margin-top:4px;font-size:12.5px;color:var(--muted)}
+  .tile.hero{background:linear-gradient(135deg,var(--surface),var(--accent-soft))}
   .tile.hero .tv{color:var(--accent)}
   .tile.gold{background:var(--gold-bg);border-color:transparent}
   .tile.gold .tl{color:var(--gold-ink);opacity:.8}
@@ -148,7 +156,7 @@
   .notice.warn{background:var(--gold-bg);color:var(--gold-ink)}
 
   /* upfront cash strip */
-  .cashline{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:12px;margin-top:14px;padding:14px 16px;background:var(--accent-soft);border-radius:10px}
+  .cashline{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:12px;margin-top:16px;padding:16px 18px;background:linear-gradient(135deg,var(--accent-soft),color-mix(in srgb,var(--accent-soft) 62%,var(--surface)));border:1px solid color-mix(in srgb,var(--accent) 14%,var(--line));border-radius:13px}
   @media (max-width:600px){ .cashline{grid-template-columns:1fr} }
   .cashline .cl{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
   .cashline .cv{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px}
@@ -180,7 +188,7 @@
   .barrow{display:grid;grid-template-columns:96px 1fr auto;gap:10px;align-items:center;font-size:13px;margin:9px 0}
   .barlab{font-weight:650}
   .bartrack{min-width:60px}
-  .bar{background:var(--accent);border-radius:4px;height:12px;min-width:3px}
+  .bar{background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:99px;height:12px;min-width:3px;box-shadow:0 2px 5px rgba(83,125,109,.14)}
   .barval{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
 
   /* explainer cards */
@@ -191,7 +199,9 @@
   .exp p{margin:0;font-size:13px;color:var(--muted)}
   .tag{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent);border-radius:99px;padding:2px 8px}
 
-  footer{margin-top:26px;font-size:12px;color:var(--muted);line-height:1.6}
+  footer{margin:28px 4px 0;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.6}
+  @media (max-width:520px){.wrap{padding:18px 13px 48px}.top{gap:11px}.brand{width:42px;height:42px}.top .sub{font-size:12px}.top-actions{display:none}.card{padding:16px}.tab{flex:0 0 auto}.tile .tv{font-size:26px}}
+
   @media (prefers-reduced-motion: reduce){ *{transition:none !important} }
 </style>
 
@@ -201,6 +211,9 @@
     <div>
       <h1>Home Loan Calculator</h1>
       <p class="sub">Malaysia · instalment, legal fees &amp; stamp duty, early settlement, flexi loans</p>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="themeToggle" type="button" aria-label="Toggle colour theme" title="Toggle colour theme">◐</button>
     </div>
   </header>
 
@@ -232,26 +245,8 @@
     <button class="tab" data-tab="t4" role="tab" aria-selected="false">MRTA vs MLTA</button>
   </nav>
 
-  <!-- TAB 1 : instalment + legal fees -->
+  <!-- TAB 1 : legal fees + stamp duty, then instalment -->
   <section class="panel on" id="t1">
-    <div class="tiles">
-      <div class="tile hero">
-        <div class="tl">Monthly instalment</div>
-        <div class="tv" id="mPay">—</div>
-        <div class="ts" id="mPaySub">—</div>
-      </div>
-      <div class="tile">
-        <div class="tl">Total interest</div>
-        <div class="tv sm" id="tInt">—</div>
-        <div class="ts">over full tenure</div>
-      </div>
-      <div class="tile">
-        <div class="tl">Total payment</div>
-        <div class="tv sm" id="tPay">—</div>
-        <div class="ts">principal + interest</div>
-      </div>
-    </div>
-
     <div class="card">
       <div class="eyebrow">Legal fees &amp; stamp duty</div>
       <div class="opts">
@@ -264,12 +259,12 @@
         <table>
           <thead><tr><th>Item</th><th class="r">Amount</th></tr></thead>
           <tbody>
-            <tr><td>SPA legal fee <span class="hint">SRO 2023 scale — 1.25% on first RM500k, 1% on next RM7m</span></td><td class="r" id="fSpaLegal">—</td></tr>
-            <tr><td>SPA disbursements <span class="hint">searches, registration, misc — editable estimate</span></td><td class="r"><input class="mini" id="dSpa" type="number" inputmode="decimal" value="2000" min="0" step="100"></td></tr>
-            <tr><td>Stamp duty on MOT <span class="hint">1% first RM100k · 2% to RM500k · 3% to RM1m · 4% above</span></td><td class="r" id="fMot">—</td></tr>
-            <tr><td>Loan legal fee <span class="hint">same SRO 2023 scale, on loan amount</span></td><td class="r" id="fLoanLegal">—</td></tr>
-            <tr><td>Loan disbursements <span class="hint">editable estimate</span></td><td class="r"><input class="mini" id="dLoan" type="number" inputmode="decimal" value="1500" min="0" step="100"></td></tr>
-            <tr><td>Stamp duty on loan agreement <span class="hint">0.5% of loan amount</span></td><td class="r" id="fLoanStamp">—</td></tr>
+            <tr><td>Legal fees for SPA <span class="hint">SRO 2023 scale — 1.25% on first RM500k, 1% on next RM7m</span></td><td class="r" id="fSpaLegal">—</td></tr>
+            <tr><td>Legal fees for loan <span class="hint">same SRO 2023 scale, on loan amount</span></td><td class="r" id="fLoanLegal">—</td></tr>
+            <tr><td>Disbursement fees for SPA <span class="hint">searches, registration, misc — editable estimate</span></td><td class="r"><input class="mini" id="dSpa" type="number" inputmode="decimal" value="2000" min="0" step="100"></td></tr>
+            <tr><td>Disbursement fees for loan <span class="hint">editable estimate</span></td><td class="r"><input class="mini" id="dLoan" type="number" inputmode="decimal" value="1500" min="0" step="100"></td></tr>
+            <tr><td>Stamp duty for loan <span class="hint">0.5% of loan amount</span></td><td class="r" id="fLoanStamp">—</td></tr>
+            <tr><td>Stamp duty for MOT <span class="hint">1% first RM100k · 2% to RM500k · 3% to RM1m · 4% above</span></td><td class="r" id="fMot">—</td></tr>
             <tr><td>SST 8% on legal fees</td><td class="r" id="fSst">—</td></tr>
             <tr class="total"><td>Total fees &amp; duties</td><td class="r" id="fTotal">—</td></tr>
           </tbody>
@@ -281,6 +276,14 @@
         <div class="big"><div class="cl">Est. cash needed upfront</div><div class="cv" id="cTotal">—</div></div>
       </div>
       <p class="note">MOT stamp duty is payable when the title is transferred — for new launches where strata title comes later, this can fall 1–3 years after SPA. Developer packages often absorb legal fees; tick the boxes above to match the offer.</p>
+    </div>
+
+    <div class="tiles">
+      <div class="tile hero">
+        <div class="tl">Monthly instalment</div>
+        <div class="tv" id="mPay">—</div>
+        <div class="ts" id="mPaySub">—</div>
+      </div>
     </div>
   </section>
 
@@ -679,8 +682,6 @@
     // Tab 1 — instalment
     $("mPay").textContent = RM2(M);
     $("mPaySub").textContent = rate.toFixed(2) + "% p.a. · " + yrs + " years · monthly rest";
-    $("tInt").textContent = RM(base.interest);
-    $("tPay").textContent = RM(loan + base.interest);
 
     // Tab 1 — fees
     var ftb = $("ftb").checked, absS = $("absSpa").checked, absL = $("absLoan").checked;
@@ -799,6 +800,23 @@
   }
 
   // ---- wiring ----
+  var themeToggle = $("themeToggle");
+  var storedTheme = localStorage.getItem("fcg-loan-theme");
+  if(storedTheme === "light" || storedTheme === "dark") document.documentElement.dataset.theme = storedTheme;
+  function syncThemeButton(){
+    var dark = document.documentElement.dataset.theme === "dark";
+    themeToggle.textContent = dark ? "☀" : "◐";
+    themeToggle.setAttribute("aria-label", dark ? "Use light colour theme" : "Use dark colour theme");
+    themeToggle.title = dark ? "Use light colour theme" : "Use dark colour theme";
+  }
+  themeToggle.addEventListener("click", function(){
+    var currentlyDark = document.documentElement.dataset.theme === "dark";
+    document.documentElement.dataset.theme = currentlyDark ? "light" : "dark";
+    localStorage.setItem("fcg-loan-theme", document.documentElement.dataset.theme);
+    syncThemeButton();
+  });
+  syncThemeButton();
+
   document.addEventListener("input", recalc);
   document.addEventListener("change", recalc);
 
